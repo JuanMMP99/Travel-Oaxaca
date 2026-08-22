@@ -6,7 +6,7 @@
 // ============================================================
 
 const PROMOTORES = {
-  edna: { nombre: "Edna Citlali", whatsapp: "529514990142" },
+  edna: { nombre: "Promotor 1", whatsapp: "529514990142" },
 
   // Agrega más promotores así (el código de la izquierda es el que
   // va en el link, ej. vtotravel.com?p=juan):
