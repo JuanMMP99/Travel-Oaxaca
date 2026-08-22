@@ -1,0 +1,7 @@
+Errores:
+	- No está guardando los clientes correctamente o ver el flujo de como los guardando
+
+Mejoras:
+	- Implementar politicas de privacidad
+	- Mostrar mensaje de texto en el formulario sobre los datos que se piden
+	

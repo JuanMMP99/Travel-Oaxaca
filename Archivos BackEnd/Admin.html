@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrativo — Travel</title>
+
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b0f19;
+      color: #f1f5f9;
+    }
+    .glass-panel {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 94, 58, 0.3);
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 94, 58, 0.6);
+    }
+  </style>
+</head>
+<body class="min-h-screen custom-scrollbar flex flex-col">
+
+  <!-- APP STATE CONTROLLER -->
+  <div id="app" class="flex-1 flex flex-col">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="flex-1 flex items-center justify-center p-4">
+      <div class="glass-panel w-full max-w-md p-8 rounded-2xl shadow-2xl space-y-6">
+        <div class="text-center space-y-2">
+          <div class="inline-flex p-3 rounded-2xl bg-orange-500/10 text-orange-500 mb-2">
+            <i data-lucide="compass" class="w-10 h-10"></i>
+          </div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Travel Admin</h1>
+          <p class="text-sm text-gray-400">Ingresa tus credenciales para acceder</p>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Correo Electrónico</label>
+            <input type="email" id="loginEmail" required class="w-full bg-gray-900/80 border border-gray-700/60 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 text-white placeholder-gray-500" placeholder="admin@travel.com">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">Contraseña</label>
+            <input type="password" id="loginPassword" required class="w-full bg-gray-900/80 border border-gray-700/60 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 text-white placeholder-gray-500" placeholder="••••••••">
+          </div>
+          <button type="submit" id="btnLogin" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl transition duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-orange-500/20">
+            <span>Iniciar Sesión</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </form>
+
+        <div class="relative my-4">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-800"></div></div>
+          <div class="relative flex justify-center text-xs uppercase"><span class="bg-gray-900 px-2 text-gray-500">O acceder con</span></div>
+        </div>
+
+        <button onclick="handleGoogleLogin()" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 font-medium py-3 rounded-xl transition duration-200 flex items-center justify-center space-x-2">
+          <i data-lucide="chrome" class="w-4 h-4"></i>
+          <span>Sesión de Google</span>
+        </button>
+
+        <p id="loginError" class="text-xs text-red-400 text-center hidden"></p>
+      </div>
+    </div>
+
+    <!-- MAIN DASHBOARD APP LAYOUT -->
+    <div id="mainDashboard" class="hidden flex-1 flex flex-col md:flex-row">
+
+      <!-- SIDEBAR -->
+      <aside class="w-full md:w-64 glass-panel border-r border-gray-800 flex flex-col justify-between">
+        <div class="p-6">
+          <div class="flex items-center space-x-3 mb-8">
+            <div class="p-2 bg-orange-500/10 text-orange-500 rounded-xl">
+              <i data-lucide="map-pin" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h2 class="font-bold text-white leading-none">Travel</h2>
+              <span class="text-xs text-gray-400">Control Panel</span>
+            </div>
+          </div>
+
+          <nav class="space-y-1">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-orange-500 bg-orange-500/10">
+              <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+              <span>Dashboard</span>
+            </button>
+            <button onclick="switchTab('reservas')" id="nav-reservas" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/50">
+              <i data-lucide="calendar" class="w-5 h-5"></i>
+              <span>Reservas</span>
+            </button>
+            <button onclick="switchTab('clientes')" id="nav-clientes" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/50">
+              <i data-lucide="users" class="w-5 h-5"></i>
+              <span>Clientes</span>
+            </button>
+            <button onclick="switchTab('respaldos')" id="nav-respaldos" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:text-white hover:bg-gray-800/50">
+              <i data-lucide="database" class="w-5 h-5"></i>
+              <span>Respaldos</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- USER PROFILE FOOTER -->
+        <div class="p-4 border-t border-gray-800/80">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-sm">
+                <span id="userAvatar">A</span>
+              </div>
+              <div class="truncate max-w-[110px]">
+                <p id="userName" class="text-sm font-medium text-white truncate">Admin</p>
+                <p id="userEmail" class="text-xs text-gray-500 truncate">admin@vto.com</p>
+              </div>
+            </div>
+            <button onclick="handleLogout()" class="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-red-500/10 transition" title="Cerrar Sesión">
+              <i data-lucide="log-out" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT CONTAINER -->
+      <main class="flex-1 p-6 md:p-8 custom-scrollbar overflow-y-auto max-h-screen">
+
+        <!-- TAB 1: DASHBOARD -->
+        <section id="tab-dashboard" class="space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Resumen General</h1>
+              <p class="text-sm text-gray-400">Métricas principales de Travel</p>
+            </div>
+            <button onclick="loadDashboardData()" class="self-start md:self-auto px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm font-medium rounded-xl flex items-center space-x-2 transition">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              <span>Actualizar</span>
+            </button>
+          </div>
+
+          <!-- METRIC CARDS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-panel p-5 rounded-2xl border border-gray-800">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold uppercase text-gray-400 tracking-wider">Total Reservas</span>
+                <div class="p-2 rounded-xl bg-blue-500/10 text-blue-400"><i data-lucide="shopping-bag" class="w-5 h-5"></i></div>
+              </div>
+              <p id="dashTotalReservas" class="text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-gray-800">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold uppercase text-gray-400 tracking-wider">Ventas Totales</span>
+                <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400"><i data-lucide="dollar-sign" class="w-5 h-5"></i></div>
+              </div>
+              <p id="dashVentasTotales" class="text-2xl font-bold text-white">$0 MXN</p>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-gray-800">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold uppercase text-gray-400 tracking-wider">Reservas de Hoy</span>
+                <div class="p-2 rounded-xl bg-orange-500/10 text-orange-400"><i data-lucide="clock" class="w-5 h-5"></i></div>
+              </div>
+              <p id="dashReservasHoy" class="text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="glass-panel p-5 rounded-2xl border border-gray-800">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold uppercase text-gray-400 tracking-wider">Venta Últs 7 Días</span>
+                <div class="p-2 rounded-xl bg-purple-500/10 text-purple-400"><i data-lucide="trending-up" class="w-5 h-5"></i></div>
+              </div>
+              <p id="dashVentasSemana" class="text-2xl font-bold text-white">$0 MXN</p>
+            </div>
+          </div>
+
+          <!-- CHARTS SECTION -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-panel p-6 rounded-2xl border border-gray-800">
+              <h3 class="text-base font-bold text-white mb-4">Reservas por Estatus</h3>
+              <div class="h-64">
+                <canvas id="chartEstatus"></canvas>
+              </div>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-gray-800">
+              <h3 class="text-base font-bold text-white mb-4">Punto de Encuentro</h3>
+              <div class="h-64">
+                <canvas id="chartPuntoEncuentro"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: RESERVAS -->
+        <section id="tab-reservas" class="hidden space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Gestión de Reservas</h1>
+              <p class="text-sm text-gray-400">Administra tours, pasajeros y comprobantes</p>
+            </div>
+            <button onclick="openModalNuevaReserva()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium text-sm rounded-xl flex items-center space-x-2 transition shadow-lg shadow-orange-500/20">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Nueva Reserva Manual</span>
+            </button>
+          </div>
+
+          <!-- FILTERS BAR -->
+          <div class="glass-panel p-4 rounded-2xl border border-gray-800 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <input type="text" id="filterBusqueda" oninput="loadReservasData()" placeholder="Buscar cliente, teléfono o folio..." class="w-full bg-gray-900 border border-gray-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <select id="filterEstado" onchange="loadReservasData()" class="w-full bg-gray-900 border border-gray-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+                <option value="all">Todos los estatus</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Confirmado">Confirmado</option>
+                <option value="Completado">Completado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+            </div>
+            <button onclick="loadReservasData()" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm font-medium rounded-xl py-2.5 flex items-center justify-center space-x-2 transition">
+              <i data-lucide="filter" class="w-4 h-4"></i>
+              <span>Filtrar</span>
+            </button>
+          </div>
+
+          <!-- RESERVAS TABLE -->
+          <div class="glass-panel rounded-2xl border border-gray-800 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-gray-300">
+                <thead class="bg-gray-900/80 text-xs font-semibold uppercase tracking-wider text-gray-400 border-b border-gray-800">
+                  <tr>
+                    <th class="px-6 py-4">Folio</th>
+                    <th class="px-6 py-4">Cliente</th>
+                    <th class="px-6 py-4">Tour</th>
+                    <th class="px-6 py-4">Personas</th>
+                    <th class="px-6 py-4">Punto de Encuentro</th>
+                    <th class="px-6 py-4">Pago</th>
+                    <th class="px-6 py-4">Total</th>
+                    <th class="px-6 py-4">Estatus</th>
+                    <th class="px-6 py-4 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaReservasBody" class="divide-y divide-gray-800/60">
+                  <tr>
+                    <td colspan="9" class="px-6 py-8 text-center text-gray-500">Cargando reservas...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: CLIENTES -->
+        <section id="tab-clientes" class="hidden space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Directorio de Clientes</h1>
+              <p class="text-sm text-gray-400">Historial de reservas por pasajero</p>
+            </div>
+            <button onclick="loadClientesData()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm font-medium rounded-xl flex items-center space-x-2 transition">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              <span>Actualizar Tabla</span>
+            </button>
+          </div>
+
+          <!-- CLIENTES TABLE -->
+          <div class="glass-panel rounded-2xl border border-gray-800 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-gray-300">
+                <thead class="bg-gray-900/80 text-xs font-semibold uppercase tracking-wider text-gray-400 border-b border-gray-800">
+                  <tr>
+                    <th class="px-6 py-4">Nombre</th>
+                    <th class="px-6 py-4">Teléfono</th>
+                    <th class="px-6 py-4">Reservas</th>
+                    <th class="px-6 py-4">Total Invertido</th>
+                    <th class="px-6 py-4">Último Tour</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaClientesBody" class="divide-y divide-gray-800/60">
+                  <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">Cargando clientes...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: RESPALDOS -->
+        <section id="tab-respaldos" class="hidden space-y-6">
+          <div>
+            <h1 class="text-2xl font-bold text-white">Seguridad y Respaldos</h1>
+            <p class="text-sm text-gray-400">Copia de seguridad en Google Drive</p>
+          </div>
+
+          <div class="glass-panel p-6 rounded-2xl border border-gray-800 max-w-2xl space-y-6">
+            <div class="flex items-start space-x-4">
+              <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl mt-1">
+                <i data-lucide="hard-drive" class="w-6 h-6"></i>
+              </div>
+              <div class="space-y-1">
+                <h3 class="font-bold text-white">Respaldo de Base de Datos</h3>
+                <p class="text-sm text-gray-400">Los respaldos automáticos están programados todos los lunes a las 3:00 AM. También puedes generar una copia manual en tiempo real.</p>
+              </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-4 space-y-3">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-400">Último Respaldo:</span>
+                <span id="lastBackupDate" class="font-medium text-white">No registrado</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-400">Ubicación:</span>
+                <a id="lastBackupUrl" href="#" target="_blank" class="text-orange-400 hover:underline flex items-center space-x-1">
+                  <span>Ver carpeta en Drive</span>
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+            <button onclick="handleForzarRespaldo()" id="btnRespaldo" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-orange-500/20">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+              <span>Generar Respaldo Ahora</span>
+            </button>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: NUEVA RESERVA MANUAL -->
+  <div id="modalNuevaReserva" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-lg rounded-2xl border border-gray-800 p-6 space-y-6 custom-scrollbar max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-gray-800 pb-4">
+        <h3 class="text-lg font-bold text-white">Crear Reserva Manual</h3>
+        <button onclick="closeModalNuevaReserva()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="formNuevaReserva" onsubmit="handleGuardarReservaManual(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Nombre Pasajero Principal</label>
+          <input type="text" id="mCliente" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Teléfono</label>
+            <input type="tel" id="mTelefono" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Personas</label>
+            <input type="number" id="mPersonas" min="1" value="1" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Tour</label>
+          <select id="mTourSelect" onchange="autocompletarTourManual()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+            <option value="">Seleccionar de catálogo (opcional)...</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Nombre del Tour</label>
+            <input type="text" id="mTourNombre" required placeholder="Ej. Tesoro de los Valles" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Ruta / Subtítulo</label>
+            <input type="text" id="mTourSubtitulo" placeholder="Ej. Hierve el Agua" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Horario</label>
+          <input type="text" id="mTourHorario" placeholder="Ej. 8:30 am – 7:00 pm" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Punto de Encuentro</label>
+            <select id="mPuntoEncuentro" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+              <option value="hotel">Hotel / Airbnb</option>
+              <option value="oficina">Oficina</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Método de Pago</label>
+            <select id="mMetodoPago" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+              <option value="efectivo">Efectivo</option>
+              <option value="transferencia">Transferencia</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Hotel / Airbnb (si aplica)</label>
+          <input type="text" id="mHotelNombre" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500" placeholder="Nombre de hotel o dirección">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Precio por Persona ($ MXN)</label>
+            <input type="number" id="mPrecioUnitario" min="0" step="10" required oninput="recalcularTotalManual()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Total ($ MXN)</label>
+            <input type="number" id="mTotal" min="0" step="10" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Notas Adicionales</label>
+          <textarea id="mNotas" rows="2" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500" placeholder="Restricciones alimenticias, peticiones, etc."></textarea>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-800">
+          <button type="button" onclick="closeModalNuevaReserva()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-sm">Cancelar</button>
+          <button type="submit" id="btnGuardarReserva" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-orange-500/20">Guardar Reserva</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FRONTEND SCRIPT CONTROL -->
+  <script>
+    // ESTADO GLOBAL DE APLICACIÓN
+    let currentToken = null;
+    let chartEstatusInstance = null;
+    let chartPuntoEncuentroInstance = null;
+
+    // Catálogo de tours para autocompletar la reserva manual.
+    // Edítalo si cambian tus rutas (debe reflejar tours-data.js del sitio).
+    const CATALOGO_TOURS = [
+      { nombre: "Tesoro de los Valles", subtitulo: "Hierve el Agua", horario: "8:30 am – 7:00 pm", precio: 500 },
+      { nombre: "La Grandeza Zapoteca", subtitulo: "Monte Albán", horario: "9:30 am – 5:30 pm", precio: 400 },
+      { nombre: "Sierra Norte", subtitulo: "Capulálpam de Méndez", horario: "8:15 am – 8:00 pm", precio: 700 },
+      { nombre: "Cascadas y Misterios", subtitulo: "Río Peñas", horario: "8:15 am – 8:00 pm", precio: 700 },
+      { nombre: "Puerto Escondido", subtitulo: "Playas & Bioluminiscencia", horario: "5:30 am – 10:00 pm", precio: 700 },
+      { nombre: "Aventura en las Nubes", subtitulo: "Cumbre Tirolesa", horario: "8:15 am – 9:00 pm", precio: 700 },
+      { nombre: "Cenote & Grutas", subtitulo: "El Encanto", horario: "8:15 am – 8:00 pm", precio: 700 },
+      { nombre: "Tour Alebrijes", subtitulo: "Magia Artesanal", horario: "9:30 am – 6:00 pm", precio: 700 },
+    ];
+
+    // INICIALIZACIÓN DE ICONOS LUCIDE
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      poblarSelectTours();
+      checkAutoSession();
+    });
+
+    function poblarSelectTours() {
+      const select = document.getElementById('mTourSelect');
+      CATALOGO_TOURS.forEach((t, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${t.nombre} — ${t.subtitulo}`;
+        select.appendChild(opt);
+      });
+    }
+
+    function autocompletarTourManual() {
+      const idx = document.getElementById('mTourSelect').value;
+      if (idx === '') return;
+      const tour = CATALOGO_TOURS[idx];
+      document.getElementById('mTourNombre').value = tour.nombre;
+      document.getElementById('mTourSubtitulo').value = tour.subtitulo;
+      document.getElementById('mTourHorario').value = tour.horario;
+      document.getElementById('mPrecioUnitario').value = tour.precio;
+      recalcularTotalManual();
+    }
+
+    function recalcularTotalManual() {
+      const personas = Number(document.getElementById('mPersonas').value) || 0;
+      const precio = Number(document.getElementById('mPrecioUnitario').value) || 0;
+      document.getElementById('mTotal').value = personas * precio;
+    }
+
+    /* ==========================================================================
+       AUTENTICACIÓN
+       ========================================================================== */
+
+    function checkAutoSession() {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.authenticated) {
+            setAuthenticatedSession(res);
+          }
+        })
+        .checkGoogleSession();
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('btnLogin');
+      const err = document.getElementById('loginError');
+
+      btn.disabled = true;
+      btn.innerText = 'Autenticando...';
+      err.classList.add('hidden');
+
+      google.script.run
+        .withSuccessHandler(res => {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Iniciar Sesión</span><i data-lucide="arrow-right" class="w-4 h-4"></i>';
+          lucide.createIcons();
+          setAuthenticatedSession(res);
+        })
+        .withFailureHandler(error => {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Iniciar Sesión</span><i data-lucide="arrow-right" class="w-4 h-4"></i>';
+          lucide.createIcons();
+          err.innerText = error.message || 'Error de conexión';
+          err.classList.remove('hidden');
+        })
+        .loginWithPassword(email, pass);
+    }
+
+    function handleGoogleLogin() {
+      checkAutoSession();
+    }
+
+    function setAuthenticatedSession(res) {
+      currentToken = res.token;
+      document.getElementById('userName').innerText = res.nombre || 'Admin';
+      document.getElementById('userEmail').innerText = res.email || '';
+      document.getElementById('userAvatar').innerText = (res.nombre || 'A').charAt(0).toUpperCase();
+
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainDashboard').classList.remove('hidden');
+
+      loadDashboardData();
+    }
+
+    function handleLogout() {
+      if (currentToken) {
+        google.script.run.logout(currentToken);
+      }
+      currentToken = null;
+      document.getElementById('mainDashboard').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       NAVEGACIÓN ENTRE PESTAÑAS
+       ========================================================================== */
+
+    function switchTab(tab) {
+      ['dashboard', 'reservas', 'clientes', 'respaldos'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add('hidden');
+        const navBtn = document.getElementById(`nav-${t}`);
+        navBtn.classList.remove('text-orange-500', 'bg-orange-500/10');
+        navBtn.classList.add('text-gray-400');
+      });
+
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`nav-${tab}`);
+      activeBtn.classList.add('text-orange-500', 'bg-orange-500/10');
+      activeBtn.classList.remove('text-gray-400');
+
+      if (tab === 'dashboard') loadDashboardData();
+      if (tab === 'reservas') loadReservasData();
+      if (tab === 'clientes') loadClientesData();
+      if (tab === 'respaldos') loadRespaldoInfo();
+    }
+
+    /* ==========================================================================
+       TAB 1: DASHBOARD
+       ========================================================================== */
+
+    function loadDashboardData() {
+      if (!currentToken) return;
+
+      google.script.run
+        .withSuccessHandler(data => {
+          document.getElementById('dashTotalReservas').innerText = data.total || 0;
+          document.getElementById('dashVentasTotales').innerText = `$${(data.ventasTotales || 0).toLocaleString('es-MX')} MXN`;
+          document.getElementById('dashReservasHoy').innerText = data.reservasHoy || 0;
+          document.getElementById('dashVentasSemana').innerText = `$${(data.ventasSemana || 0).toLocaleString('es-MX')} MXN`;
+
+          renderCharts(data.porEstado || {}, data.porPuntoEncuentro || {});
+        })
+        .adminGetDashboard(currentToken);
+    }
+
+    function renderCharts(porEstado, porPuntoEncuentro) {
+      // Chart 1: Estatus
+      const ctx1 = document.getElementById('chartEstatus').getContext('2d');
+      if (chartEstatusInstance) chartEstatusInstance.destroy();
+
+      chartEstatusInstance = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(porEstado),
+          datasets: [{
+            data: Object.values(porEstado),
+            backgroundColor: ['#f97316', '#10b981', '#3b82f6', '#ef4444'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#9ca3af' } } }
+        }
+      });
+
+      // Chart 2: Punto de Encuentro
+      const ctx2 = document.getElementById('chartPuntoEncuentro').getContext('2d');
+      if (chartPuntoEncuentroInstance) chartPuntoEncuentroInstance.destroy();
+
+      chartPuntoEncuentroInstance = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(porPuntoEncuentro),
+          datasets: [{
+            label: 'Reservas',
+            data: Object.values(porPuntoEncuentro),
+            backgroundColor: '#f97316',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#9ca3af' }, grid: { display: false } },
+            y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    /* ==========================================================================
+       TAB 2: RESERVAS
+       ========================================================================== */
+
+    function loadReservasData() {
+      if (!currentToken) return;
+
+      const filtros = {
+        busqueda: document.getElementById('filterBusqueda').value,
+        estado: document.getElementById('filterEstado').value
+      };
+
+      const tbody = document.getElementById('tablaReservasBody');
+      tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-8 text-center text-gray-500">Cargando datos...</td></tr>';
+
+      google.script.run
+        .withSuccessHandler(reservas => {
+          if (!reservas || reservas.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-8 text-center text-gray-500">No se encontraron reservas</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = reservas.map(r => `
+            <tr class="hover:bg-gray-800/40 transition">
+              <td class="px-6 py-4 font-mono font-bold text-orange-400">${r.uuid}</td>
+              <td class="px-6 py-4">
+                <div class="font-medium text-white">${r.cliente}</div>
+                <div class="text-xs text-gray-400">${r.telefono}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-white">${r.tourNombre}</div>
+                <div class="text-xs text-gray-400">${r.tourRuta}${r.tourHorario ? ' · ' + r.tourHorario : ''}</div>
+              </td>
+              <td class="px-6 py-4 text-gray-300 text-center">${r.personas}</td>
+              <td class="px-6 py-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium ${r.puntoEncuentro === 'Oficina' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400'}">
+                  ${r.puntoEncuentro}
+                </span>
+                ${r.hotelNombre ? `<div class="text-xs text-gray-500 mt-1">${r.hotelNombre}</div>` : ''}
+              </td>
+              <td class="px-6 py-4 text-gray-300">${r.metodoPago}</td>
+              <td class="px-6 py-4 font-bold text-white">$${(r.total || 0).toLocaleString('es-MX')} MXN</td>
+              <td class="px-6 py-4">
+                <select onchange="handleCambiarEstatus('${r.uuid}', this.value)" class="bg-gray-900 border border-gray-700/80 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-orange-500">
+                  <option value="Pendiente" ${r.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                  <option value="Confirmado" ${r.estado === 'Confirmado' ? 'selected' : ''}>Confirmado</option>
+                  <option value="Completado" ${r.estado === 'Completado' ? 'selected' : ''}>Completado</option>
+                  <option value="Cancelado" ${r.estado === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
+                </select>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button onclick="handleExportPDF('${r.uuid}')" class="p-2 text-gray-400 hover:text-orange-400 hover:bg-orange-500/10 rounded-lg transition" title="Exportar Comprobante PDF">
+                  <i data-lucide="file-text" class="w-4 h-4"></i>
+                </button>
+              </td>
+            </tr>
+          `).join('');
+
+          lucide.createIcons();
+        })
+        .adminGetReservas(currentToken, filtros);
+    }
+
+    function handleCambiarEstatus(uuid, nuevoEstado) {
+      google.script.run
+        .withSuccessHandler(() => {
+          loadReservasData();
+        })
+        .adminActualizarEstadoReserva(currentToken, uuid, nuevoEstado);
+    }
+
+    function handleExportPDF(uuid) {
+      google.script.run
+        .withSuccessHandler(res => {
+          const byteCharacters = atob(res.base64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = res.filename;
+          link.click();
+        })
+        .adminExportReservaPDF(currentToken, uuid);
+    }
+
+    /* MODAL NUEVA RESERVA */
+    function openModalNuevaReserva() {
+      document.getElementById('modalNuevaReserva').classList.remove('hidden');
+    }
+    function closeModalNuevaReserva() {
+      document.getElementById('modalNuevaReserva').classList.add('hidden');
+    }
+
+    function handleGuardarReservaManual(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnGuardarReserva');
+      btn.disabled = true;
+      btn.innerText = 'Guardando...';
+
+      const datos = {
+        cliente: document.getElementById('mCliente').value,
+        telefono: document.getElementById('mTelefono').value,
+        personas: Number(document.getElementById('mPersonas').value),
+        tourNombre: document.getElementById('mTourNombre').value,
+        tourSubtitulo: document.getElementById('mTourSubtitulo').value,
+        tourHorario: document.getElementById('mTourHorario').value,
+        puntoEncuentro: document.getElementById('mPuntoEncuentro').value,
+        hotelNombre: document.getElementById('mHotelNombre').value,
+        metodoPago: document.getElementById('mMetodoPago').value,
+        precioUnitario: Number(document.getElementById('mPrecioUnitario').value),
+        total: Number(document.getElementById('mTotal').value),
+        notas: document.getElementById('mNotas').value
+      };
+
+      google.script.run
+        .withSuccessHandler(() => {
+          btn.disabled = false;
+          btn.innerText = 'Guardar Reserva';
+          closeModalNuevaReserva();
+          document.getElementById('formNuevaReserva').reset();
+          loadReservasData();
+        })
+        .withFailureHandler(error => {
+          btn.disabled = false;
+          btn.innerText = 'Guardar Reserva';
+          alert('Error al guardar: ' + (error.message || error));
+        })
+        .adminCrearReservaManual(currentToken, datos);
+    }
+
+    /* ==========================================================================
+       TAB 3: CLIENTES
+       ========================================================================== */
+
+    function loadClientesData() {
+      if (!currentToken) return;
+
+      const tbody = document.getElementById('tablaClientesBody');
+      tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">Cargando clientes...</td></tr>';
+
+      google.script.run
+        .withSuccessHandler(clientes => {
+          if (!clientes || clientes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">No hay clientes registrados</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = clientes.map(c => `
+            <tr class="hover:bg-gray-800/40 transition">
+              <td class="px-6 py-4 font-semibold text-white">${c.nombre}</td>
+              <td class="px-6 py-4 text-gray-400">${c.telefono}</td>
+              <td class="px-6 py-4 text-gray-300 font-medium">${c.reservas}</td>
+              <td class="px-6 py-4 font-bold text-emerald-400">$${(c.totalGastado || 0).toLocaleString('es-MX')} MXN</td>
+              <td class="px-6 py-4 text-gray-400">${c.ultimoTour || 'N/A'}</td>
+            </tr>
+          `).join('');
+        })
+        .adminGetClientes(currentToken);
+    }
+
+    /* ==========================================================================
+       TAB 4: RESPALDOS
+       ========================================================================== */
+
+    function loadRespaldoInfo() {
+      if (!currentToken) return;
+
+      google.script.run
+        .withSuccessHandler(info => {
+          if (info.lastBackupDate) {
+            document.getElementById('lastBackupDate').innerText = new Date(info.lastBackupDate).toLocaleString('es-MX');
+          }
+          if (info.lastBackupUrl) {
+            document.getElementById('lastBackupUrl').href = info.lastBackupUrl;
+          }
+        })
+        .adminGetBackupInfo(currentToken);
+    }
+
+    function handleForzarRespaldo() {
+      const btn = document.getElementById('btnRespaldo');
+      btn.disabled = true;
+      btn.innerText = 'Generando Respaldo...';
+
+      google.script.run
+        .withSuccessHandler(res => {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="shield-check" class="w-5 h-5"></i><span>Generar Respaldo Ahora</span>';
+          lucide.createIcons();
+          alert('¡Respaldo generado correctamente!');
+          loadRespaldoInfo();
+        })
+        .adminForzarRespaldo(currentToken);
+    }
+  </script>
+</body>
+</html>

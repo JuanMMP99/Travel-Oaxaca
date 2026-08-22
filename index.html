@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travel — Viajes Todo Oaxaca</title>
+    <meta
+      name="description"
+      id="meta-descripcion"
+      content="Tours de día completo por Oaxaca con guía, transporte y seguro incluido. Hierve el Agua, Monte Albán, Sierra Norte, Puerto Escondido y más."
+    />
+    <!-- Font Awesome CDN para íconos vectoriales -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/estilos.css" />
+    <link rel="stylesheet" href="css/selector-promotor.css" />
+    <link rel="stylesheet" href="css/tour-cards-foto.css" />
+  </head>
+  <body>
+    <!-- ═══════════════════════════════════════════
+       NAVBAR
+  ═══════════════════════════════════════════ -->
+    <nav class="navbar" role="navigation" aria-label="Navegación principal">
+      <div class="navbar__inner">
+        <a href="#inicio" class="navbar__logo" aria-label="VTO Travel inicio">
+          <div class="navbar__logo-badge"><i class="fa-solid fa-compass"></i></div>
+          <div class="navbar__logo-text">
+            <span class="brand-title">Travel</span>
+            <span class="navbar__logo-subtext" id="promotor-nombre">Promotor Edna Citlali</span>
+          </div>
+        </a>
+
+        <ul class="navbar__links" role="list">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#tours">Tours</a></li>
+          <li><a href="#info">¿Cómo funciona?</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+          <li><a href="#tours" class="btn-nav-reservar"><i class="fa-solid fa-paper-plane"></i> Reservar</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════
+       HERO (Inspirado en diseño con Carrusel Naranja Automático)
+  ═══════════════════════════════════════════ -->
+    <section class="hero-carousel-section" id="inicio" aria-label="Bienvenida">
+      <div class="hero__bg-slider">
+        <div class="hero__bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="hero__bg-slide" style="background-image: url('images/tours/tour-1.jpg')"></div>
+        <div class="hero__bg-slide" style="background-image: url('images/tours/tour-2.jpg')"></div>
+        <div class="hero__bg-slide" style="background-image: url('images/tours/tour-5.jpg')"></div>
+      </div>
+      <div class="hero__overlay"></div>
+
+      <div class="hero__inner">
+        <div class="hero__content">
+          <span class="hero__badge"><i class="fa-solid fa-location-dot"></i> Oaxaca, México</span>
+          <h1 class="hero__title">
+            Descubre la magia de<br />
+            <span class="highlight">Oaxaca</span> con nosotros
+          </h1>
+          <p class="hero__subtitle">
+            Tours guiados de día completo con transporte, coordinador y seguro de
+            viajero incluido. Reserva fácil y sin complicaciones.
+          </p>
+          <div class="hero__actions">
+            <a href="#tours" class="hero__btn">
+              <i class="fa-solid fa-compass"></i> Explorar Rutas
+            </a>
+            <a
+              href="https://wa.me/529514990142"
+              target="_blank"
+              rel="noopener"
+              class="hero__btn hero__btn--outline"
+            >
+              <i class="fa-brands fa-whatsapp"></i> Escríbenos
+            </a>
+          </div>
+        </div>
+
+        <!-- Carrusel lateral de destacadas -->
+        <div class="hero__cards-wrapper">
+          <div class="hero__cards-container" id="hero-carousel-cards">
+            <!-- Se dinamiza o precarga por JS -->
+            <div class="hero-mini-card active" onclick="seleccionarSlideHero(0)">
+              <div class="hero-mini-card__img" style="background-image: url('images/tours/tour-1.jpg')"></div>
+              <div class="hero-mini-card__overlay"></div>
+              <div class="hero-mini-card__title">Hierve el Agua</div>
+            </div>
+            <div class="hero-mini-card" onclick="seleccionarSlideHero(1)">
+              <div class="hero-mini-card__img" style="background-image: url('images/tours/tour-2.jpg')"></div>
+              <div class="hero-mini-card__overlay"></div>
+              <div class="hero-mini-card__title">Monte Albán</div>
+            </div>
+            <div class="hero-mini-card" onclick="seleccionarSlideHero(2)">
+              <div class="hero-mini-card__img" style="background-image: url('images/tours/tour-5.jpg')"></div>
+              <div class="hero-mini-card__overlay"></div>
+              <div class="hero-mini-card__title">Puerto Escondido</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de controles inferior del Hero estilo plantilla -->
+      <div class="hero__controls-bar">
+        <div class="hero__progress-bar">
+          <div class="hero__progress-fill" id="hero-progress-fill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+       ESTADÍSTICAS
+  ═══════════════════════════════════════════ -->
+    <section class="stats-section reveal" aria-label="Estadísticas">
+      <div class="stats-section__inner">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-route"></i></div>
+            <div class="stat-number" data-stat="0">8</div>
+            <div class="stat-label" data-stat-label="0">Rutas disponibles</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-van-shuttle"></i></div>
+            <div class="stat-number" data-stat="1">100%</div>
+            <div class="stat-label" data-stat-label="1">Transporte incluido</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-star"></i></div>
+            <div class="stat-number" data-stat="2">★ 4.9</div>
+            <div class="stat-label" data-stat-label="2">Calificación TripAdvisor</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-number" data-stat="3">+5K</div>
+            <div class="stat-label" data-stat-label="3">Viajeros satisfechos</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+       TOURS
+  ═══════════════════════════════════════════ -->
+    <section class="tours-section" id="tours" aria-label="Catálogo de tours">
+      <div class="section-header reveal">
+        <span class="section-subtitle"><i class="fa-solid fa-map"></i> Experiencias Inolvidables</span>
+        <h2>Conoce nuestras <span class="highlight-text">rutas</span></h2>
+        <p>
+          Cada tour incluye guía experto, transporte redondo y seguro de
+          viajero.
+        </p>
+      </div>
+
+      <div
+        class="tours-filtros reveal"
+        id="filtros-container"
+        role="group"
+        aria-label="Filtrar por categoría"
+      >
+        <!-- Se genera desde tours-render.js -->
+      </div>
+
+      <div
+        class="tours-grid reveal"
+        id="tours-grid"
+        role="list"
+        aria-label="Lista de tours"
+      >
+        <!-- Se genera desde tours-render.js -->
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+       INFORMACIÓN IMPORTANTE (CÓMO FUNCIONA)
+  ═══════════════════════════════════════════ -->
+    <section class="info-section" id="info" aria-label="Información importante">
+      <div class="info-section__inner">
+        <div class="section-header reveal">
+          <span class="section-subtitle"><i class="fa-solid fa-circle-info"></i> Paso a Paso</span>
+          <h2>¿Cómo <span class="highlight-text">funciona</span>?</h2>
+          <p>Todo lo que necesitas saber antes de reservar tu aventura.</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card reveal">
+            <div class="info-card__icon-wrapper">
+              <i class="fa-solid fa-van-shuttle"></i>
+            </div>
+            <div class="info-card__content">
+              <h3>Recolección en tu hotel</h3>
+              <p>
+                Te recogemos en tu hotel o airbnb dentro de la ciudad de Oaxaca en
+                el horario indicado. El regreso se realiza en nuestra oficina en
+                <span data-oficina-larga
+                  >Valerio Trujano #206, a una cuadra del Zócalo</span
+                >.
+              </p>
+            </div>
+          </div>
+
+          <div class="info-card reveal">
+            <div class="info-card__icon-wrapper">
+              <i class="fa-solid fa-credit-card"></i>
+            </div>
+            <div class="info-card__content">
+              <h3>Pago flexible</h3>
+              <p>
+                Aceptamos pago en efectivo y también contamos con terminal
+                bancaria en nuestra oficina. Puedes coordinarlo al momento de tu
+                reserva.
+              </p>
+            </div>
+          </div>
+
+          <div class="info-card reveal">
+            <div class="info-card__icon-wrapper">
+              <i class="fa-solid fa-users-gear"></i>
+            </div>
+            <div class="info-card__content">
+              <h3>Tours colectivos y privados</h3>
+              <p>
+                Nuestros tours colectivos tienen tiempos establecidos en cada
+                parada. Si prefieres mayor flexibilidad, pregunta por nuestro
+                servicio privado.
+              </p>
+            </div>
+          </div>
+
+          <div class="info-card reveal">
+            <div class="info-card__icon-wrapper">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+            <div class="info-card__content">
+              <h3>Costos adicionales</h3>
+              <p>
+                Las entradas a zonas arqueológicas y alimentos
+                <strong>no están incluidos</strong>
+                en el precio base. Consulta el catálogo para ver los costos
+                opcionales de cada ruta.
+              </p>
+            </div>
+          </div>
+
+          <div class="info-card reveal">
+            <div class="info-card__icon-wrapper">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="info-card__content">
+              <h3>Camionetas equipadas</h3>
+              <p>
+                Nuestras unidades cuentan con aire acondicionado, están
+                sanitizadas y son operadas por conductores capacitados para tu
+                comodidad y seguridad.
+              </p>
+            </div>
+          </div>
+
+          <div class="info-card reveal">
+            <div class="info-card__icon-wrapper">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+            <div class="info-card__content">
+              <h3>¿Tienes dudas?</h3>
+              <p>
+                Escríbenos por WhatsApp o al correo
+                <strong data-email>contacto@travel.com</strong> y con gusto te
+                atendemos. También puedes visitar
+                <strong data-sitio-web>www.travel.com</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════ -->
+    <footer id="contacto" aria-label="Pie de página">
+      <div class="footer__inner">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <div class="footer__logo-badge"><i class="fa-solid fa-compass"></i>Travel</div>
+            <h3>Viajes Todo Oaxaca</h3>
+            <p>
+              Tu agencia de confianza para descubrir la riqueza cultural y natural del estado de Oaxaca.
+            </p>
+          </div>
+
+          <div class="footer__col">
+            <h4>Tours Destacados</h4>
+            <ul id="footer-tours-lista">
+              <!-- Se genera desde main.js -->
+            </ul>
+          </div>
+
+          <div class="footer__col">
+            <h4>Contacto</h4>
+            <ul class="footer-contacto-list">
+              <li>
+                <i class="fa-solid fa-location-dot"></i>
+                <span data-oficina-corta>Valerio Trujano #206, Oaxaca</span>
+              </li>
+              <li>
+                <i class="fa-solid fa-envelope"></i>
+                <a href="mailto:contacto@vtotravel.com" data-email>contacto@travel.com</a>
+              </li>
+              <li>
+                <i class="fa-solid fa-globe"></i>
+                <a href="https://www.vtotravel.com" target="_blank" rel="noopener" data-sitio-web>www.travel.com</a>
+              </li>
+              <li>
+                <i class="fa-brands fa-whatsapp"></i>
+                <a href="https://wa.me/529514990142" target="_blank" rel="noopener">+52 951 499 0142</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer__bottom">
+          <span id="footer-anio-marca">© 2025 Travel · Viajes Todo Oaxaca</span>
+          <span>Hecho con <i class="fa-solid fa-heart" style="color: #ff5e3a;"></i> en Oaxaca, México</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════
+       SELECTOR DE PROMOTOR
+  ═══════════════════════════════════════════ -->
+    <div id="selector-promotor-overlay" class="selector-promotor-overlay"></div>
+
+    <!-- ═══════════════════════════════════════════
+       MODAL DE RESERVA
+  ═══════════════════════════════════════════ -->
+    <div id="modal-reserva-container"></div>
+
+    <!-- ═══════════════════════════════════════════
+       BOTÓN FLOTANTE WHATSAPP
+  ═══════════════════════════════════════════ -->
+    <a
+      href="https://wa.me/529514990142"
+      class="whatsapp-fab"
+      target="_blank"
+      rel="noopener"
+      aria-label="Contáctanos por WhatsApp"
+    >
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- ═══════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════ -->
+    <script src="js/constants.js"></script>
+    <script src="js/promotores-data.js"></script>
+    <script src="js/tours-data.js"></script>
+    <script src="js/tours-render.js"></script>
+    <script src="js/modal-selector-promotor.js"></script>
+    <script src="js/modal-reserva.js"></script>
+    <script src="js/formulario.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

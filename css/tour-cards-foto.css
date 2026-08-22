@@ -1,0 +1,24 @@
+/* ============================================================
+   VTO Travel — Foto en tarjetas de tour
+   Franja de imagen entre el header de color y el cuerpo de la
+   card. Se activa sola si el tour tiene "imagen" en tours-data.js.
+============================================================ */
+
+.tour-card__foto {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #e8edf2;
+}
+
+.tour-card__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.tour-card:hover .tour-card__foto img {
+  transform: scale(1.03);
+}
