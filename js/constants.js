@@ -4,7 +4,7 @@
 
 const VTO = {
   negocio: {
-    nombre: "VTO Travel",
+    nombre: "Travel",
     slogan: "Viajes Todo Oaxaca",
     anioCopyright: 2025,
   },
