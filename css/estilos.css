@@ -1294,3 +1294,10 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
